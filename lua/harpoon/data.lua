@@ -1,6 +1,27 @@
 local Path = require("plenary.path")
 
-local data_path = string.format("%s/harpoon", vim.fn.stdpath("data"))
+function get_base_datapath()
+  local env_var = "NVIM_DATA_PATH"
+  local env_val = vim.fn.getenv(env_var)
+  if env_val == vim.NIL or env_val == "" then
+    return vim.fn.stdpath("data")
+   else
+    return env_val
+  end
+end
+
+function get_datapath(section)
+  local nvim_id_value = "NVIM_ID"
+  local nvim_id = vim.fn.getenv(nvim_id_value)
+  if nvim_id == vim.NIL or nvim_id == "" then
+    return string.format("%s/%s/", get_base_datapath(), section)
+   else
+    return string.format("%s/%s_%s/", get_base_datapath(), section, nvim_id)
+  end
+end
+
+local data_path = get_datapath("harpoon")
+
 local ensured_data_path = false
 local function ensure_data_path()
     if ensured_data_path then
